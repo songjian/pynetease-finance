@@ -12,7 +12,7 @@ EXCHANGE_TYPES = {
     '深交所': 1
 }
 
-def historical_prices(code, start, end, fields='TCLOSE;LCLOSE;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP'):
+def historical_prices(code, start='', end='', fields='TCLOSE;LCLOSE;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP'):
     url = 'http://quotes.money.163.com/service/chddata.html'
     data = {
         'code': str(code),
@@ -20,9 +20,11 @@ def historical_prices(code, start, end, fields='TCLOSE;LCLOSE;TURNOVER;VOTURNOVE
         'end': str(end),
         'fields': str(fields),
     }
-    r = requests.post(url, data=data, headers=headers)
+    r = requests.get(url, params=data, headers=headers)
     r.encoding='gb2312'
-    return r.text  
+    df = pd.read_csv(io.StringIO(r.text), index_col=0, parse_dates=['日期'])
+    df['股票代码'].replace(regex=True, to_replace=r'\'', value=r'', inplace=True)
+    return df
 
 def zycwzb(code):
     url = 'http://quotes.money.163.com/service/zycwzb_' + str(code) + '.html'
@@ -35,4 +37,6 @@ def zycwzb(code):
     csv_buffer=io.StringIO()
     t.to_csv(csv_buffer)
     csv_buffer.seek(0)
-    return pd.read_csv(csv_buffer, header=1, parse_dates=['报告日期'], index_col=0)
+    df2=pd.read_csv(csv_buffer, header=1, parse_dates=['报告日期'], index_col=0)
+    df2['每股净资产(元)'].replace(to_replace='--', value=0, inplace=True)
+    return df2
