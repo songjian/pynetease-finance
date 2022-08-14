@@ -13,9 +13,11 @@ EXCHANGE_TYPES = {
 }
 
 def historical_prices(code, start='', end='', fields='TCLOSE;LCLOSE;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP'):
+    code = str(code)
+    first_code = '1' if code[0] in ('0', '2', '3') else '0'
     url = 'http://quotes.money.163.com/service/chddata.html'
     data = {
-        'code': str(code),
+        'code': first_code + str(code),
         'start': str(start),
         'end': str(end),
         'fields': str(fields),

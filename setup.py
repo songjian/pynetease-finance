@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pynetease-finance",
-    version="0.0.1",
+    version="0.0.2",
     author="sj",
     author_email="songjian@codeorder.cn",
     description="获取网易财经网站数据。",
