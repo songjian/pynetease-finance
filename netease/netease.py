@@ -34,11 +34,10 @@ def historical_prices(code, start='', end='', fields='TCLOSE;LCLOSE;TURNOVER;VOT
         'fields': str(fields),
     }
     r = requests.get(url, params=data, headers=headers)
-    return r.text
-    # r.encoding='gb2312'
-    # df = pd.read_csv(io.StringIO(r.text), index_col=0, parse_dates=['日期'])
-    # df['股票代码'].replace(regex=True, to_replace=r'\'', value=r'', inplace=True)
-    # return df
+    r.encoding='gb2312'
+    df = pd.read_csv(io.StringIO(r.text), index_col=0, parse_dates=['日期'])
+    df['股票代码'].replace(regex=True, to_replace=r'\'', value=r'', inplace=True)
+    return df
 
 
 def zycwzb(code):
