@@ -11,8 +11,19 @@ EXCHANGE_TYPES = {
     '上交所': 0,
     '深交所': 1
 }
-
 def historical_prices(code, start='', end='', fields='TCLOSE;LCLOSE;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP'):
+    """
+    获取股票历史价格数据
+
+    Args:
+        code (str): 股票代码
+        start (str): 开始日期，格式为YYYY-MM-DD，默认为空字符串
+        end (str): 结束日期，格式为YYYY-MM-DD，默认为空字符串
+        fields (str): 需要获取的字段，多个字段用分号隔开，默认为'TCLOSE;LCLOSE;TURNOVER;VOTURNOVER;VATURNOVER;TCAP;MCAP'
+
+    Returns:
+        pandas.DataFrame: 包含历史价格数据的DataFrame
+    """
     code = str(code)
     first_code = '1' if code[0] in ('0', '2', '3') else '0'
     url = 'http://quotes.money.163.com/service/chddata.html'
@@ -23,12 +34,23 @@ def historical_prices(code, start='', end='', fields='TCLOSE;LCLOSE;TURNOVER;VOT
         'fields': str(fields),
     }
     r = requests.get(url, params=data, headers=headers)
-    r.encoding='gb2312'
-    df = pd.read_csv(io.StringIO(r.text), index_col=0, parse_dates=['日期'])
-    df['股票代码'].replace(regex=True, to_replace=r'\'', value=r'', inplace=True)
-    return df
+    return r.text
+    # r.encoding='gb2312'
+    # df = pd.read_csv(io.StringIO(r.text), index_col=0, parse_dates=['日期'])
+    # df['股票代码'].replace(regex=True, to_replace=r'\'', value=r'', inplace=True)
+    # return df
+
 
 def zycwzb(code):
+    """
+    获取股票主要财务指标
+
+    Args:
+        code (str): 股票代码
+
+    Returns:
+        pandas.DataFrame: 包含主要财务指标的DataFrame
+    """
     url = 'http://quotes.money.163.com/service/zycwzb_' + str(code) + '.html'
     data = {
         'type': 'report'
